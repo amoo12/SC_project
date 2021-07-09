@@ -6,7 +6,6 @@ import 'package:weshare_main/models/user.dart';
 class Ride {
   String rid;
   String did;
-  User user;
   String from;
   String to;
   // String date;
@@ -23,7 +22,6 @@ class Ride {
   List<dynamic> riders;
   Ride({
     this.rid,
-    this.user,
     this.from,
     this.to,
     this.date,
@@ -143,7 +141,7 @@ class CurrentRides {
       this.note,
       this.status,
       this.driver}) {
-      this.dateAdded = ago(dateAdded);
+    this.dateAdded = ago(dateAdded);
   }
 
   String ago(String datetime) {

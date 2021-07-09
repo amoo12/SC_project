@@ -7,11 +7,9 @@ import 'package:weshare_main/models/user.dart';
 import 'package:firebase_storage/firebase_storage.dart';
 import 'package:weshare_main/screens/chat_screen.dart';
 
-class DatabaseService {
+class DatabaseServiceUser {
   String uid;
-  String rid;
-  DatabaseService({this.uid});
-  DatabaseService.withRid({this.rid});
+  DatabaseServiceUser({this.uid});
 
   final CollectionReference ridesCollection =
       Firestore.instance.collection('rides');
@@ -19,17 +17,12 @@ class DatabaseService {
   final CollectionReference usersCollection =
       Firestore.instance.collection('users');
 
-  Future getRides() async {
-    return await ridesCollection.getDocuments();
-  }
-
-  Future insertUser(
-      {String name, String email, String phoneNumber, String gender}) async {
+  Future insertUser(User user) async {
     return await usersCollection.document(uid).setData({
-      'name': name,
-      'email': email,
-      'phoneNumber': phoneNumber,
-      'gender': gender,
+      'name': user.name,
+      'email': user.email,
+      'phoneNumber': user.phoneNumber,
+      'gender': user.gender,
       'isDriver': false,
       'photo': false,
     });
@@ -41,42 +34,7 @@ class DatabaseService {
       'phoneNumber': user.phoneNumber,
     });
 
-    if (user.isDriver) {
-      //  await ridesCollection.where('did', isEqualTo: user.uid).snapshots().forEach((element) {
-      //     element.documents.forEach((element) {
-      //       element.reference.updateData(<String, dynamic>{
-      //           'driver': {
-      //             'name': user.name,
-      //             'car': user.car.toMap(user.car)
-      //           }
-      //       });
-      //     });
-      //   });
-
-      //    await usersCollection.document(user.uid).collection('providedRides').snapshots().forEach((element) {
-      //     element.documents.forEach((element) {
-      //       element.reference.updateData(<String, dynamic>{
-      //           'driver': {
-      //             'name': user.name,
-      //             'car': user.car.toMap(user.car)
-      //           }
-      //       });
-      //     });
-      //   });
-    }
-
-    // ridesCollection.where('did', isEqualTo: user.uid).snapshots().map((event) {
-    //   event.documents.forEach((element) {
-    //     element.reference.updateData(<String, dynamic>{
-    //         'from': 'melawis'
-    //     });
-    //   });
-    // });
-  }
-
-  Driver _driverFromSnapsoht(Map<String, dynamic> data) {
-    // print(data);
-    return Driver(data);
+    if (user.isDriver) {}
   }
 
   Car _carFromSnapsoht(Map<String, dynamic> data) {
@@ -88,44 +46,76 @@ class DatabaseService {
         seatsNo: data['seatsNo'] == null ? "" : data['seatsNo']);
   }
 
-  List<Ride> _ridesListFromSnapshot(QuerySnapshot snapshot) {
-    // List<Ride> rides;
-    return snapshot.documents.map((doc) {
-      Ride ride = Ride(
-        rid: doc.documentID,
-        did: doc.data['did'],
-        from: doc.data['from'],
-        to: doc.data['to'],
-        dateAdded: doc.data['dateAdded'],
-        dateTime: doc.data['dateTime'],
-        riders: doc.data['riders'],
-        price: doc.data['price'],
-        availableSeats: doc.data['availableSeats'],
-        status: doc.data['status'],
-        driver: _driverFromSnapsoht(doc.data['driver']),
-        note: doc.data['note'],
-      );
-      // print("docdata: ${doc.documentID}");
-      return ride;
-    }).toList();
+  Future<User> getUserDetails(String uid) {
+    return usersCollection.document(uid).get().then((doc) {
+      return userFromSnapshots(doc);
+    });
   }
 
-  List<CurrentRides> _rodesListFromSnapshot(QuerySnapshot snapshot) {
-    return snapshot.documents.map((doc) {
-      CurrentRides ride = CurrentRides(
-          rid: doc.documentID,
-          did: doc.data['did'],
-          from: doc.data['from'],
-          to: doc.data['to'],
-          dateAdded: doc.data['dateAdded'],
-          dateTime: doc.data['dateTime'],
-          riders: doc.data['riders'],
-          price: doc.data['price'],
-          availableSeats: doc.data['availableSeats'],
-          status: doc.data['status'],
-          driver: _driverFromSnapsoht(doc.data['driver']));
-      return ride;
-    }).toList();
+  User userFromSnapshots(DocumentSnapshot snapshot) {
+    Map<String, dynamic> data;
+    User user = User(
+        uid: snapshot.documentID,
+        email: snapshot.data['email'],
+        name: snapshot.data['name'],
+        gender: snapshot.data['gender'],
+        phoneNumber: snapshot.data['phoneNumber'],
+        photo: snapshot.data['photo'],
+        isDriver: snapshot.data['isDriver'],
+        car: snapshot.data['isDriver']
+            ? _carFromSnapsoht(snapshot.data['car'])
+            : data);
+    return user;
+  }
+
+  Future editCarDetails(Car car) async {
+    return await usersCollection
+        .document(uid)
+        .updateData({'car': car.toMap(car), 'isDriver': true});
+  }
+
+  Future<bool> isDriver() async {
+    return usersCollection
+        .document(uid)
+        .get()
+        .then((doc) => doc.data['isDriver']);
+  }
+
+  Future<Image> getImage(String image) async {
+    Image m;
+    await FirebaseStorage.instance
+        .ref()
+        .child('$image/profile.png')
+        .getDownloadURL()
+        .then((downloadUrl) {
+      print(downloadUrl.toString());
+      m = Image.network(
+        downloadUrl.toString(),
+        fit: BoxFit.scaleDown,
+      );
+    });
+
+    return m;
+  }
+
+  Future updateUserProfilePicture(String uid) {
+    usersCollection.document(uid).updateData({'photo': true});
+  }
+
+  Future<List<User>> getMyRiders(CurrentRides ride) async {
+    List<User> users = [];
+    List myRidersId = await ridesCollection
+        .document(ride.rid)
+        .get()
+        .then((doc) => doc.data['riders']);
+
+    for (var rider in myRidersId) {
+      users.add(await usersCollection.document(rider).get().then((doc) {
+        return userFromSnapshots(doc);
+      }));
+    }
+
+    return users;
   }
 
   Stream<List<CurrentRides>> userRides(var userType) {
@@ -147,6 +137,58 @@ class DatabaseService {
     }
   }
 
+  List<CurrentRides> _rodesListFromSnapshot(QuerySnapshot snapshot) {
+    return snapshot.documents.map((doc) {
+      CurrentRides ride = CurrentRides(
+          rid: doc.documentID,
+          did: doc.data['did'],
+          from: doc.data['from'],
+          to: doc.data['to'],
+          dateAdded: doc.data['dateAdded'],
+          dateTime: doc.data['dateTime'],
+          riders: doc.data['riders'],
+          price: doc.data['price'],
+          availableSeats: doc.data['availableSeats'],
+          status: doc.data['status'],
+          driver: Driver(doc.data['driver']));
+      return ride;
+    }).toList();
+  }
+}
+
+class DatabaseServiceRides {
+  String rid;
+  DatabaseServiceRides({this.rid});
+
+  final CollectionReference ridesCollection =
+      Firestore.instance.collection('rides');
+
+  final CollectionReference usersCollection =
+      Firestore.instance.collection('users');
+  Future getRides() async {
+    return await ridesCollection.getDocuments();
+  }
+
+  List<Ride> _ridesListFromSnapshot(QuerySnapshot snapshot) {
+    return snapshot.documents.map((doc) {
+      Ride ride = Ride(
+        rid: doc.documentID,
+        did: doc.data['did'],
+        from: doc.data['from'],
+        to: doc.data['to'],
+        dateAdded: doc.data['dateAdded'],
+        dateTime: doc.data['dateTime'],
+        riders: doc.data['riders'],
+        price: doc.data['price'],
+        availableSeats: doc.data['availableSeats'],
+        status: doc.data['status'],
+        driver: Driver(doc.data['driver']),
+        note: doc.data['note'],
+      );
+      return ride;
+    }).toList();
+  }
+
   Stream<List<Ride>> get rides {
     return ridesCollection
         .where('status', isEqualTo: 'posted')
@@ -156,11 +198,9 @@ class DatabaseService {
   }
 
   Future joinRide(Ride ride, User user) async {
-    // ride.riders = [user.uid];
     print(user.uid);
     print(ride.rid);
 
-    // print('uid from joinRide: ${ride.riders[0]}');
     ride.riders.add(user.uid);
     ridesCollection.document(ride.rid).updateData({
       "availableSeats": FieldValue.increment(-1),
@@ -198,41 +238,6 @@ class DatabaseService {
       }
     }
     return filtered;
-  }
-
-  Future<User> getUserDetails(String uid) {
-    return usersCollection.document(uid).get().then((doc) {
-      return userFromSnapshots(doc);
-    });
-  }
-
-  User userFromSnapshots(DocumentSnapshot snapshot) {
-    Map<String, dynamic> data;
-    User user = User(
-        uid: snapshot.documentID,
-        email: snapshot.data['email'],
-        name: snapshot.data['name'],
-        gender: snapshot.data['gender'],
-        phoneNumber: snapshot.data['phoneNumber'],
-        photo: snapshot.data['photo'],
-        isDriver: snapshot.data['isDriver'],
-        car: snapshot.data['isDriver']
-            ? _carFromSnapsoht(snapshot.data['car'])
-            : data);
-    return user;
-  }
-
-  Future editCarDetails(Car car) async {
-    return await usersCollection
-        .document(uid)
-        .updateData({'car': car.toMap(car), 'isDriver': true});
-  }
-
-  Future<bool> isDriver() async {
-    return usersCollection
-        .document(uid)
-        .get()
-        .then((doc) => doc.data['isDriver']);
   }
 
   Future provideRide(Ride ride, User user) async {
@@ -290,7 +295,6 @@ class DatabaseService {
   }
 
   Future<void> startRide(CurrentRides ride, String uid) async {
-    //  ride.riders.add(user.uid);
     ridesCollection.document(ride.rid).updateData({
       "status": "started",
     });
@@ -362,43 +366,6 @@ class DatabaseService {
     }
   }
 
-  Future<Image> getImage(String image) async {
-    Image m;
-    await FirebaseStorage.instance
-        .ref()
-        .child('$image/profile.png')
-        .getDownloadURL()
-        .then((downloadUrl) {
-      print(downloadUrl.toString());
-      m = Image.network(
-        downloadUrl.toString(),
-        fit: BoxFit.scaleDown,
-      );
-    });
-
-    return m;
-  }
-
-  Future updateUserProfilePicture(String uid) {
-    usersCollection.document(uid).updateData({'photo': true});
-  }
-
-  Future<List<User>> getMyRiders(CurrentRides ride) async {
-    List<User> users = [];
-    List myRidersId = await ridesCollection
-        .document(ride.rid)
-        .get()
-        .then((doc) => doc.data['riders']);
-
-    for (var rider in myRidersId) {
-      users.add(await usersCollection.document(rider).get().then((doc) {
-        return userFromSnapshots(doc);
-      }));
-    }
-
-    return users;
-  }
-
   Future sendMessage(CurrentRides ride, Message message) async {
     await ridesCollection
         .document(ride.rid)
@@ -419,38 +386,12 @@ class DatabaseService {
 
   List<Message> _messageFromSnapshots(QuerySnapshot snapshot) {
     List<Message> messages = [];
-    // Message
     snapshot.documents.map((doc) {
-      // print('message: ${doc.data['messages'][0]}');
-      //  return doc.data['messages'];
-
-      //  print('messageeeee: ${messages}');
       for (var i = doc.data['messages'].length - 1; i >= 0; i--) {
-        //  print(i);
-        //  print( doc.data['messages'][i]['text']);
-
-        // String dateTime = doc.data['messages'][i]['time'] ?? "";
-        // DateTime tmp =  DateFormat(" Hm").format.(dateTime);
-        // print(tmp.toString());
-
-        //           final DateTime now = DateTime.now();
-        // final DateFormat formatter = DateFormat('yyyy-MM-dd');
-        // final String formatted = formatter.format(now);
-
         messages.add(Message(doc.data['messages'][i]['uid'],
             doc.data['messages'][i]['time'], doc.data['messages'][i]['text']));
       }
-      // for (var item in doc.data['messages'][0]) {
-      //   messages.add(Message(
-      //     item['uid'],
-      //     item['time'],
-      //     item['text']
-      //   ));
-      // }
-
-      // messages.insert(0,doc.data['messages']);
     }).toList();
-    // print(' message :${m[0].uid}');
 
     return messages;
   }

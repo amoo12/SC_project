@@ -20,7 +20,7 @@ class History extends StatefulWidget {
 class _HistoryState extends State<History> {
   @override
   Widget build(BuildContext context) {
-    DatabaseService dbserveice = DatabaseService();
+    DatabaseServiceRides dbserveice = DatabaseServiceRides();
     List<CurrentRides> rides = dbserveice.filterRides(
         Provider.of<List<CurrentRides>>(context) ?? [], 'history');
 

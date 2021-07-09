@@ -28,7 +28,7 @@ class _AccountDetailsState extends State<AccountDetails> {
   Widget build(BuildContext context) {
     User user = Provider.of<User>(context);
     return FutureBuilder(
-        future: DatabaseService().getUserDetails(user.uid),
+        future: DatabaseServiceUser().getUserDetails(user.uid),
         builder: (context, snapshot) {
           if (snapshot.hasData) {
             user = snapshot.data;
@@ -83,7 +83,7 @@ class _AccountDetailsState extends State<AccountDetails> {
                                     radius: 47,
                                     child: user.photo
                                         ? FutureBuilder(
-                                            future: DatabaseService()
+                                            future: DatabaseServiceUser()
                                                 .getImage(user.uid),
                                             builder: (context, snapshot) {
                                               if (snapshot.connectionState ==
@@ -216,7 +216,7 @@ class _AccountDetailsState extends State<AccountDetails> {
                                     : phoneNumber;
                                 user.name = name == '' ? user.name : name;
                                 //  print('name: $name');
-                                DatabaseService().updateUserdetails(user);
+                                DatabaseServiceUser().updateUserdetails(user);
                                 SnackBar registrationBar = SnackBar(
                                   content: Text(
                                     'The changes you made will be reflected the next time you open the this page',
@@ -413,7 +413,7 @@ class _UploaderState extends State<Uploader> {
                 : 0;
 
             if (_uploadTask.isComplete) {
-              DatabaseService().updateUserProfilePicture(user.uid);
+              DatabaseServiceUser().updateUserProfilePicture(user.uid);
               Navigator.pop(context);
             }
 

@@ -22,7 +22,7 @@ class _RidesState extends State<Rides> {
     User user = Provider.of<User>(context) ?? [];
     //  List<Ride> ride = Provider.of<List<Ride>>(context) ?? [];
     return StreamProvider<List<CurrentRides>>.value(
-      value: DatabaseService(uid: user.uid).userRides(widget.usertype),
+      value: DatabaseServiceUser(uid: user.uid).userRides(widget.usertype),
       child: DefaultTabController(
           length: 2,
           child: Scaffold(
@@ -112,7 +112,6 @@ class _RidesState extends State<Rides> {
 }
 
 class CurrentListView extends StatefulWidget {
-
   CurrentListView(this.usertype);
   final usertype;
 
@@ -123,7 +122,7 @@ class CurrentListView extends StatefulWidget {
 class _CurrentListViewState extends State<CurrentListView> {
   @override
   Widget build(BuildContext context) {
-    DatabaseService dbserveice = DatabaseService();
+    DatabaseServiceRides dbserveice = DatabaseServiceRides();
     List<CurrentRides> rides = dbserveice.filterRides(
         Provider.of<List<CurrentRides>>(context) ?? [], 'current');
     //  print('trying rides: ${rides}');

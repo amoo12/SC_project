@@ -83,7 +83,7 @@ class _RrDetailsState extends State<RrDetails> {
                     borderRadius: BorderRadius.circular(8.0),
                     // borderSide: BorderSide(color: Colors.grey, width: 0.5),
                   ),
-                  child: chatsLT(context, ride),
+                  child: chatsListTile(context, ride),
                 ),
                 Card(
                   margin: EdgeInsets.all(0),
@@ -107,13 +107,13 @@ class _RrDetailsState extends State<RrDetails> {
                                 children: <Widget>[
                                   CircleAvatar(
                                     child: FutureBuilder(
-                                        future: DatabaseService()
+                                        future: DatabaseServiceUser()
                                             .getUserDetails(ride.did),
                                         builder: (context, snapshot) {
                                           if (snapshot.hasData) {
                                             if (snapshot.data.photo) {
                                               FutureBuilder(
-                                                future: DatabaseService()
+                                                future: DatabaseServiceUser()
                                                     .getImage(ride.did),
                                                 builder: (context, snapshot) {
                                                   if (snapshot.connectionState ==
@@ -448,35 +448,7 @@ class _RrDetailsState extends State<RrDetails> {
                           //   borderRadius: BorderRadius.circular(5.0),
                           // ),
                           onPressed: () {
-                            AlertDialog warning = AlertDialog(
-                              shape: RoundedRectangleBorder(
-                                  borderRadius: BorderRadius.circular(10.0)),
-                              title: Image.asset(
-                                'assets/confused.png',
-                                height: 110,
-                              ),
-                              content:
-                                  Text('Would you like to cancel the trip?',
-                                      style: TextStyle(
-                                        fontWeight: FontWeight.bold,
-                                      )),
-                              actions: <Widget>[
-                                FlatButton(
-                                  child: Text('No'),
-                                  onPressed: () {
-                                    Navigator.pop(context);
-                                  },
-                                ),
-                                FlatButton(
-                                  child: Text('Yes'),
-                                  onPressed: () {
-                                    DatabaseService().leaveRide(ride, user.uid);
-                                    Navigator.pop(context);
-                                    Navigator.pop(context);
-                                  },
-                                ),
-                              ],
-                            );
+                            AlertDialog warning = confirmDialog(context, user);
                             showDialog(
                                 context: context,
                                 builder: (context) => warning);
@@ -502,6 +474,37 @@ class _RrDetailsState extends State<RrDetails> {
           ),
         ],
       ),
+    );
+  }
+
+// dialog dunction
+  AlertDialog confirmDialog(BuildContext context, User user) {
+    return AlertDialog(
+      shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(10.0)),
+      title: Image.asset(
+        'assets/confused.png',
+        height: 110,
+      ),
+      content: Text('Would you like to cancel the trip?',
+          style: TextStyle(
+            fontWeight: FontWeight.bold,
+          )),
+      actions: <Widget>[
+        FlatButton(
+          child: Text('No'),
+          onPressed: () {
+            Navigator.pop(context);
+          },
+        ),
+        FlatButton(
+          child: Text('Yes'),
+          onPressed: () {
+            DatabaseServiceRides().leaveRide(ride, user.uid);
+            Navigator.pop(context);
+            Navigator.pop(context);
+          },
+        ),
+      ],
     );
   }
 }

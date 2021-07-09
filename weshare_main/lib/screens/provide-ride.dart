@@ -75,7 +75,7 @@ class _ProvideRideState extends State<ProvideRide> {
   Widget build(BuildContext context) {
     User user = Provider.of<User>(context);
     return FutureBuilder(
-        future: DatabaseService().getUserDetails(user.uid),
+        future: DatabaseServiceUser().getUserDetails(user.uid),
         builder: (context, snapshot) {
           if (snapshot.hasData) {
             user = snapshot.data;
@@ -141,7 +141,11 @@ class _ProvideRideState extends State<ProvideRide> {
                                               width: 8,
                                             ),
                                             SizedBox(
-                                              width:MediaQuery.of(context).size.width/2+60,
+                                              width: MediaQuery.of(context)
+                                                          .size
+                                                          .width /
+                                                      2 +
+                                                  60,
                                               child: TextFormField(
                                                 controller:
                                                     originHolder, //controller
@@ -241,7 +245,11 @@ class _ProvideRideState extends State<ProvideRide> {
                                               width: 8,
                                             ),
                                             SizedBox(
-                                              width:MediaQuery.of(context).size.width/2+60,
+                                              width: MediaQuery.of(context)
+                                                          .size
+                                                          .width /
+                                                      2 +
+                                                  60,
                                               child: TextFormField(
                                                 controller:
                                                     destinationHolder, //controller
@@ -652,7 +660,10 @@ class _ProvideRideState extends State<ProvideRide> {
                                     Column(
                                       children: <Widget>[
                                         SizedBox(
-                                          width:MediaQuery.of(context).size.width-70,
+                                          width: MediaQuery.of(context)
+                                                  .size
+                                                  .width -
+                                              70,
                                           child: Container(
                                             decoration: BoxDecoration(
                                                 color: Color(0xFFF1F3F5),
@@ -699,8 +710,9 @@ class _ProvideRideState extends State<ProvideRide> {
                           Align(
                             alignment: Alignment.bottomCenter,
                             child: Container(
-                              width:MediaQuery.of(context).size.width,
-                              margin: EdgeInsets.symmetric(vertical:10, horizontal: 30),
+                              width: MediaQuery.of(context).size.width,
+                              margin: EdgeInsets.symmetric(
+                                  vertical: 10, horizontal: 30),
                               height: 50,
                               child: FlatButton(
                                 child: Text(
@@ -708,10 +720,9 @@ class _ProvideRideState extends State<ProvideRide> {
                                   style: TextStyle(
                                       color: Colors.white,
                                       fontWeight: FontWeight.bold,
-                                      fontSize: 17
-                                  ),
+                                      fontSize: 17),
                                 ),
-                                
+
                                 onPressed: () async {
                                   // print();
                                   // print(tripTime);
@@ -735,7 +746,7 @@ class _ProvideRideState extends State<ProvideRide> {
                                       status: 'posted',
                                     );
 
-                                    await DatabaseService()
+                                    await DatabaseServiceRides()
                                         .provideRide(ride, user);
 
                                     AlertDialog warning = AlertDialog(
@@ -806,7 +817,8 @@ class _ProvideRideState extends State<ProvideRide> {
                                       ),
                                     );
                                     showDialog(
-                                        context: context, builder: (context) => warning);
+                                        context: context,
+                                        builder: (context) => warning);
                                   } else {
                                     SnackBar registrationBar = SnackBar(
                                       content: Text(

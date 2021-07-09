@@ -27,7 +27,7 @@ class EditCarDetails extends StatelessWidget {
 
     Car car =  Car(color:carColor,type: carType,seatsNo: int.parse(emptySeats),plateNumber: carPlateNo );
 
-    await DatabaseService(uid: uid).editCarDetails(car);
+    await DatabaseServiceUser(uid: uid).editCarDetails(car);
   
     // _scaffoldKey.currentState.showSnackBar(
       // SnackBar(

@@ -10,7 +10,6 @@ class User {
   bool photo;
   bool isDriver;
   Car car;
-  Ride ride;
 
   User(
       {this.uid,

@@ -28,7 +28,7 @@ class _DashboardState extends State<Dashboard> {
     // final rides = Provider.of<List<Ride>>(widget.context);
     //print('arrives here');
     return StreamProvider<List<Ride>>.value(
-      value: DatabaseService().rides,
+      value: DatabaseServiceRides().rides,
       child: WillPopScope(
         onWillPop: () => Future.value(false),
         child: Scaffold(
@@ -94,7 +94,7 @@ class RidesSliverList extends StatefulWidget {
 }
 
 class _RidesSliverListState extends State<RidesSliverList> {
-  DatabaseService databaseService = DatabaseService();
+  DatabaseServiceRides databaseService = DatabaseServiceRides();
 
   @override
   Widget build(BuildContext context) {
@@ -136,13 +136,13 @@ class _RidesSliverListState extends State<RidesSliverList> {
                         backgroundColor: Colors.white,
                         radius: 21.5,
                         child: FutureBuilder(
-                            future: DatabaseService()
+                            future: DatabaseServiceUser()
                                 .getUserDetails(dashboardList[index].did),
                             builder: (context, snapshot) {
                               if (snapshot.hasData) {
                                 if (snapshot.data.photo) {
                                   FutureBuilder(
-                                    future: DatabaseService()
+                                    future: DatabaseServiceUser()
                                         .getImage(dashboardList[index].did),
                                     builder: (context, snapshot) {
                                       if (snapshot.connectionState ==
@@ -177,12 +177,10 @@ class _RidesSliverListState extends State<RidesSliverList> {
                                   Container(
                                       child: Icon(Icons.person, size: 35));
                                 }
-
                               }
                               return Container(
-                                      child: Icon(Icons.person, size: 35));
-                            }
-                            ),
+                                  child: Icon(Icons.person, size: 35));
+                            }),
                       ),
                     ),
                     Padding(

@@ -17,7 +17,7 @@ class AuthService {
     return _auth.onAuthStateChanged.map(_userFormFirebaseUser);
   }
 
-  Future auth(String email, String password) async {
+  Future signInWithEmailAndPassword(String email, String password) async {
     try {
       AuthResult result = await _auth.signInWithEmailAndPassword(
           email: email, password: password);
@@ -37,12 +37,7 @@ class AuthService {
           email: user.email, password: user.password);
       FirebaseUser fireUser = result.user;
       print('fire uid:  ${fireUser.uid}');
-      await DatabaseService(uid: fireUser.uid).insertUser(
-        name: user.name,
-        email: user.email,
-        gender: user.gender,
-        phoneNumber: user.phoneNumber,
-      );
+      await DatabaseServiceUser(uid: fireUser.uid).insertUser(user);
       return _userFormFirebaseUser(fireUser);
     } catch (e) {
       print(e.toString());

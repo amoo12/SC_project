@@ -17,7 +17,7 @@ class Profile extends StatefulWidget {
 
 class _ProfileState extends State<Profile> {
   AuthService _auth = AuthService();
-  DatabaseService databaseService = DatabaseService();
+  DatabaseServiceUser databaseService = DatabaseServiceUser();
   final _scaffoldKey = GlobalKey<ScaffoldState>();
   @override
   Widget build(BuildContext context) {
@@ -66,7 +66,7 @@ class _ProfileState extends State<Profile> {
                                 radius: 50,
                                 child: user.photo
                                     ? FutureBuilder(
-                                        future: DatabaseService()
+                                        future: DatabaseServiceUser()
                                             .getImage(user.uid),
                                         builder: (context, snapshot) {
                                           if (snapshot.connectionState ==
@@ -79,11 +79,12 @@ class _ProfileState extends State<Profile> {
                                               radius: 45,
                                             );
                                           else if (snapshot.connectionState ==
-                                              ConnectionState.waiting)
+                                              ConnectionState.waiting) {
+                                            CircularProgressIndicator();
                                             return Container(
                                                 child: Icon(Icons.person,
                                                     size: 70));
-                                          else if (snapshot.connectionState ==
+                                          } else if (snapshot.connectionState ==
                                               ConnectionState.none) {
                                             return Container(
                                               child: Icon(Icons.person),
@@ -92,7 +93,6 @@ class _ProfileState extends State<Profile> {
                                           return Container(
                                             child: Icon(Icons.person, size: 70),
                                           );
-                                          CircularProgressIndicator();
                                         },
                                       )
                                     : Container(

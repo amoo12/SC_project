@@ -32,95 +32,19 @@ class _SettingsState extends State<Settings> {
 
                 //topRight: Radius.circular(20.0)),
               ),
-              child: Column(
-                children: <Widget>[
-                  // Account Details
-                  Column(children: <Widget>[
-                    ListTile(
-                      leading: Icon(
-                        Icons.account_circle,
-                        color: Colors.blue,
-                        size: 35,
-                      ),
-                      title: Text('Account Details',
-                          style: Theme.of(context).textTheme.title),
-                      trailing: Icon(
-                        Icons.keyboard_arrow_right,
-                        color: Colors.grey[300],
-                      ),
-                      onTap: () {
-                        Navigator.pushNamed(context, '/AccountDetails');
-                      },
-                    ),
-                    Divider(
-                      thickness: 1,
-                      color: Colors.grey[300],
-                      height: 1,
-                    ),
-                  ]),
-                  // Privacy
-                  Column(children: <Widget>[
-                    ListTile(
-                      leading: Icon(
-                        Icons.lock,
-                        color: Colors.blue,
-                        size: 35,
-                      ),
-                      title: Text('Account Details',
-                          style: Theme.of(context).textTheme.title),
-                      trailing: Icon(
-                        Icons.keyboard_arrow_right,
-                        color: Colors.grey[300],
-                      ),
-                      onTap: () {},
-                    ),
-                    Divider(
-                      thickness: 1,
-                      color: Colors.grey[300],
-                      height: 1,
-                    ),
-                  ]),
-
-                  // Help & Support
-                  Column(children: <Widget>[
-                    ListTile(
-                      leading: Icon(
-                        Icons.lock,
-                        color: Colors.blue,
-                        size: 35,
-                      ),
-                      title: Text('Privacy Policy',
-                          style: Theme.of(context).textTheme.title),
-                      trailing: Icon(
-                        Icons.keyboard_arrow_right,
-                      ),
-                    ),
-                    Divider(
-                      thickness: 1,
-                      color: Colors.grey[300],
-                      height: 1,
-                    ),
-                  ]),
-
-                  // Feedback
-                  Column(children: <Widget>[
-                    ListTile(
-                      leading: Icon(
-                        Icons.insert_comment,
-                        color: Colors.blue,
-                        size: 35,
-                      ),
-                      title: Text('Feedback',
-                          style: Theme.of(context).textTheme.title),
-                    ),
-                    Divider(
-                      thickness: 1,
-                      color: Colors.grey[300],
-                      height: 1,
-                    ),
-                  ]),
-                ],
-              ),
+              child: Column(children: <Widget>[
+                SettingsButtons(
+                  Icons.account_circle,
+                  'Account Details',
+                  true,
+                  () {
+                    Navigator.pushNamed(context, '/AccountDetails');
+                  },
+                ),
+                SettingsButtons(Icons.lock, 'Privacy Policy', true, () {}),
+                SettingsButtons(Icons.help, 'Help & Support', true, () {}),
+                SettingsButtons(Icons.insert_comment, 'Feedback', false, () {}),
+              ]),
             ),
           ),
 
@@ -164,5 +88,40 @@ class _SettingsState extends State<Settings> {
         ],
       ),
     );
+  }
+}
+
+class SettingsButtons extends StatelessWidget {
+  final icon;
+  final title;
+  final bool isPageNavigator;
+  final Function handler;
+
+  SettingsButtons(this.icon, this.title, this.isPageNavigator, this.handler);
+
+  @override
+  Widget build(BuildContext context) {
+    return Column(children: <Widget>[
+      ListTile(
+        leading: Icon(
+          icon,
+          color: Colors.blue,
+          size: 35,
+        ),
+        title: Text(title, style: Theme.of(context).textTheme.title),
+        trailing: isPageNavigator
+            ? Icon(
+                Icons.keyboard_arrow_right,
+                color: Colors.grey[300],
+              )
+            : null,
+        onTap: handler,
+      ),
+      Divider(
+        thickness: 1,
+        color: Colors.grey[300],
+        height: 1,
+      ),
+    ]);
   }
 }

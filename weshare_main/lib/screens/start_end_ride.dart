@@ -78,7 +78,7 @@ class _StartEndRideInterfaceState extends State<StartEndRideInterface> {
                     shape: RoundedRectangleBorder(
                         side: BorderSide(color: Colors.grey[400]),
                         borderRadius: BorderRadius.circular(10.0)),
-                    child: chatsLT(context, ride),
+                    child: chatsListTile(context, ride),
                   ),
                 ),
                 SizedBox(height: 0.7),
@@ -264,7 +264,7 @@ class _StartEndRideInterfaceState extends State<StartEndRideInterface> {
                                               if (!loaded)
                                                 CircularProgressIndicator();
 
-                                              DatabaseService()
+                                              DatabaseServiceUser()
                                                   .getMyRiders(ride)
                                                   .then((users) {
                                                 loaded = true;
@@ -374,7 +374,8 @@ class _StartEndRideInterfaceState extends State<StartEndRideInterface> {
                                     child: Text('END RIDE',
                                         style: TextStyle(color: Colors.white)),
                                     onPressed: () {
-                                      DatabaseService().endRide(ride, user.uid);
+                                      DatabaseServiceRides()
+                                          .endRide(ride, user.uid);
                                       Navigator.of(context).pop();
                                     },
                                   )
@@ -386,7 +387,7 @@ class _StartEndRideInterfaceState extends State<StartEndRideInterface> {
                                     child: Text('START RIDE',
                                         style: TextStyle(color: Colors.white)),
                                     onPressed: () {
-                                      DatabaseService()
+                                      DatabaseServiceRides()
                                           .startRide(ride, user.uid);
                                       setState(() {
                                         rideStarted = true;
@@ -430,7 +431,7 @@ class _StartEndRideInterfaceState extends State<StartEndRideInterface> {
                                           child: Text('Yes'),
                                           onPressed: () {
                                             // TODO
-                                            DatabaseService()
+                                            DatabaseServiceRides()
                                                 .cancelRide(ride, user.uid);
                                             Navigator.pop(context);
                                             Navigator.pop(context);

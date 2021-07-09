@@ -170,7 +170,8 @@ class _LoginState extends State<Login> {
                               child: RaisedButton(
                                   onPressed: () async {
                                     if (_formKey.currentState.validate()) {
-                                      await _auth.auth(email, password);
+                                      await _auth.signInWithEmailAndPassword(
+                                          email, password);
 
                                       // if (email == 'test@test.com' &&
                                       //     password == '123456') {

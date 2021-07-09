@@ -43,12 +43,12 @@ class _RideSummaryState extends State<RideSummary> {
                     radius: 47.0,
                     child: CircleAvatar(
                       child: FutureBuilder(
-                          future: DatabaseService().getUserDetails(ride.did),
+                          future: DatabaseServiceUser().getUserDetails(ride.did),
                           builder: (context, snapshot) {
                             if (snapshot.hasData) {
                               if (snapshot.data.photo) {
                                 FutureBuilder(
-                                  future: DatabaseService().getImage(ride.did),
+                                  future: DatabaseServiceUser().getImage(ride.did),
                                   builder: (context, snapshot) {
                                     if (snapshot.connectionState ==
                                             ConnectionState.done &&

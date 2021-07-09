@@ -81,7 +81,7 @@ class _BtmNavBarState extends State<BtmNavBar> {
       Profile('Rider'),
     ];
     return StreamProvider<List<Ride>>.value(
-      value: DatabaseService().rides,
+      value: DatabaseServiceRides().rides,
       child: Scaffold(
           body: _pages[_currentIndex],
           bottomNavigationBar: BottomNavigationBar(
@@ -331,13 +331,13 @@ Container currentRideCard(
                             height: 50,
                             child: CircleAvatar(
                               child: FutureBuilder(
-                                  future: DatabaseService()
+                                  future: DatabaseServiceUser()
                                       .getUserDetails(_rides.did),
                                   builder: (context, snapshot) {
                                     if (snapshot.hasData) {
                                       if (snapshot.data.photo) {
                                         FutureBuilder(
-                                          future: DatabaseService()
+                                          future: DatabaseServiceUser()
                                               .getImage(_rides.did),
                                           builder: (context, snapshot) {
                                             if (snapshot.connectionState ==
@@ -1095,7 +1095,7 @@ Container startLeaveButton(String text, var color) {
 //---------------------------------------------------------------------------------------------------------------
 
 //chats List tile
-ListTile chatsLT(BuildContext context, CurrentRides ride) {
+ListTile chatsListTile(BuildContext context, CurrentRides ride) {
   return ListTile(
     onTap: () {
       Navigator.pushNamed(context, '/chatScreen', arguments: ride);
